@@ -1,1 +1,5 @@
-.ipynb/EP1.01.txtData/MindBigData-EP-v1.0.zip
+.ipynb_checkpoints/
+data/
+backup/
+src/classifier/__pycache__/
+src/__pycache__

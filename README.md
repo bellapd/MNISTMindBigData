@@ -1,26 +1,20 @@
-# MindBigData - MNIST Brain Digit Classification
-
-腦機介面原理與應用 Brain-Computer Interfaces: Fundamentals and Application  
-**Group 11**  楊玉蘋 林柏亞 夏高上 
-
+# MindBigData - MNIST Brain Digit Classification 
+**Group 11**  Annabella Putri Dirgo 林柏亞 夏高上 
 ---
-
 ## 1.Introduction
-The MNIST dataset is a widely recognized collection of handwritten digits ranging from 0 to 9 mostly used on Machine Learning for Computer Vision Classification tasks. The MindBigData - "MNIST Brain Digit" is a dataset that is collected by EEG signal when the subject is exposed to the digit ranging from 0 to 9 as the visual stimuli. The objective is to classify EEG signals into the corresponding digit categoy. 
-i
+The MindBigData - "MNIST Brain Digit" is a dataset that is collected by EEG signal when the subject is exposed to the digit ranging from 0 to 9 as the visual stimuli. The objective is to classify EEG signals into the corresponding digit category. 
 
-
-
+The advancement of Machine Learning techniques has increased a lot, starting from normal The goal of this project is to explore the feasibility of machine learning techniques in classifying EEG signals into the corresponding digit category.
 
 ## Model Framework
 
 The architecture of our BCI system consists of the following components:
 
 ### Input
-- Dataset: **MindBigData v1.03**
+- Dataset: **MindBigData-EP-v1.0**
 - Signal: 2-second EEG trials per digit (0–9)
 - Sampling rate: **128 Hz**
-- Channels used: **[list your channel names or count]**
+- Channels used: **14 **
 
 ### Signal Preprocessing
 - **Bandpass filter** (1–40 Hz) using a Butterworth filter
