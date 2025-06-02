@@ -221,3 +221,4 @@ zeromq=4.3.5=h6a678d5_0
 zipp=3.21.0=pyhd8ed1ab_1
 zlib=1.2.13=h4ab18f5_6
 zstd=1.5.2=h8a70e8d_1
+pywavelets=1.8.0=py312h5eee18b_0
