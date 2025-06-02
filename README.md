@@ -8,6 +8,14 @@ While advancements in machine learning—such as in image recognition, natural l
 
 This project aims to investigate the feasibility of using machine learning techniques to classify EEG signals into their respective digit classes.
 
+To position our approach, we compare it with previous studies on the **MindBigData** EEG dataset and related decoding tasks:
+
+| Citation                                                                                                                                 | Approach / Research Gap                                                                                                                                                                                                     |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mishra et al. (2021)**<br>*[Visual Brain Decoding for Short Duration EEG Signals](https://doi.org/10.23919/EUSIPCO54536.2021.9616192)*[^1]| - Applied preprocessing to remove noisy short trials<br> - **Approach**: CNN using a 14-channel subset<br> - Achieved \~70% accuracy on highly filtered data<br> - Limitation: Not evaluated on raw or full dataset         |
+| **Chen et al. (2024)**<br>*[Toward reliable signals decoding for electroencephalogram](https://doi.org/10.1016/j.bspc.2023.105475)*[^2]     | - Benchmarked 16 neural network models including MBD<br> - **Approach**: EEGNeX (CNN + dilated convolutions)<br> - Achieved only **16.69% accuracy** on MBD dataset<br> - Highlighted difficulty of decoding noisy MBD data |
+| **Hilty & Zander (2024)**<br>*[Mindnist - Medium article](https://medium.com/@caelenhilty/mindnist-29f6fdda948d#a530)*[^3]                   | - Explored CNN and LSTM on MBD data<br> - Reported 10–11% accuracy at best<br> - **Key Gap**: Overfitting during training; preprocessing was insufficient to reduce variability                                            
+
 ## 2. Dataset Information
 #### Overview
 - Dataset: **MindBigData-EP-v1.0**
@@ -18,7 +26,7 @@ This project aims to investigate the feasibility of using machine learning techn
 - Channels used: **14** ["AF3", "F7", "F3", "FC5", "T7", "P7", "O1",
                  "O2", "P8", "T8", "FC6", "F4", "F8", "AF4"]
 #### Format
-The data has no headers in the files and each corresponding field is separated by a tab character. Here is the explanation cited from the MindBigData documentation[^1]:
+The data has no headers in the files and each corresponding field is separated by a tab character. Here is the explanation cited from the MindBigData documentation[^4]:
 **[id]**: a numeric, only for reference purposes.
 **[event]** id, a integer, used to distinguish the same event captured at different brain locations, used only by multichannel devices (all except MW).
 **[device]**: a 2 character string, to identify the device used to capture the signals, "MW" for MindWave, "EP" for Emotive Epoc, "MU" for Interaxon Muse & "IN" for Emotiv Insight.
@@ -29,7 +37,7 @@ EPOC	"AF3, "F7", "F3", "FC5", "T7", "P7", "O1", "O2", "P8", "T8", "FC6", "F4", "
 **[data]**: a coma separated set of numbers, with the time-series amplitude of the signal, each device uses a different precision to identify the electrical potential captured from the brain: integers in the case of MW & MU or real numbers in the case of EP & IN.
 
 ## 3. Environment Setup
-- **Python**: 3.12.2  
+- **Python**: 3.12.2  v
 - **CUDA**: 12.4  
 - **Operating System**: Ubuntu 22.04.2 LTS  
 - **GPU**: NVIDIA GeForce RTX 4060  
@@ -93,17 +101,15 @@ The main entry point to run the project is in `main.ipynb`. Activate the conda e
 └── README.md                  # Project documentation
 ```
 
-
-
 ## 4. Model Framework
 ### Outline of the architecture
 ![Model Architecture Flowchart](img/flowchart.png)
 
 **1. Data Loading `data_prep.py`**:
 EEG data is loaded from a tab-delimited text file using the `load_data()` function. Each trial is reconstructed by grouping 14 specific EEG channels (AF3, F7, ..., AF4) into a (14, 256) array. Only valid trials with sufficient length and balanced digit classes (0–9) are kept, up to 6,500 samples per class. The function returns:
-`eeg_data`: EEG trials of shape (n_trials, 14, 256)
-`digit_labels`: corresponding digit labels
-`samples_per_class`: number of samples loaded per digit
+- `eeg_data`: EEG trials of shape (n_trials, 14, 256)
+- `digit_labels`: corresponding digit labels
+- `samples_per_class`: number of samples loaded per digit
 
 **2. Data Preprocessing**:
 The EEG data undergoes several preprocessing steps:
@@ -130,6 +136,48 @@ To remove structured artifacts (e.g., eye blinks, heartbeats), we apply Independ
     The fitted ICA model is then applied to all trials in parallel. All ICs not labeled as brain are removed before reconstructing the cleaned EEG signals. This step ensures that only neural-related activity remains.
 
 **3. Feature Extraction `features_utils.py`**:
+We extract frequency-domain features using **bandpower computed from the FFT**.
+The `extract_fft_bandpower()` function calculates the **average power** within standard EEG frequency bands (`delta`, `theta`, `alpha`, `beta`) for each channel and trial.
+
+* Input: ICA-cleaned EEG of shape `(n_trials, 14, 256)`
+* Method: Apply FFT → compute power → average within each band
+* Output: Feature matrix of shape `(n_trials, 14 × 4)` where each row is a concatenation of bandpower values per channel and band.
+
+**4. Model Training and Evaluation `classifier/`**:
+We implement two neural network architectures for classification:
+- **Convolutional Neural Network (CNN) `cnn.py`**:
+   - Architecture: Temporal → Depthwise → Separable convolutions
+   - Input: Cleaned EEG data of shape `(n_trials, 14, 256)`
+   - Output: 10-class softmax
+   - Training:
+      - Optimizer: Adam (`lr=1e-3`)
+      - Loss: Cross-entropy
+      - Early stopping with best model checkpoint
+      - Evaluation via accuracy and confusion matrix
+
+- **Multi-Layer Perceptron (MLP) `mlp.py`**:
+   - Architecture: Fully connected layers with ReLU activations
+   - Input: Feature Extracted EEG data
+   - Hidden layers: 512 → 256 → 128 with BatchNorm, ReLU, Dropout
+   - Output: Softmax over 10 digit classes
+   - Training Details:
+      - Input features are z-score normalized.
+      - Trained using AdamW optimizer, CrossEntropyLoss, and learning rate scheduler.
+      - Best model checkpoint is saved based on validation loss with early stopping.
+
+- **Accuracy Validation`eval.py`**:
+   we use the `evaluate_model()` function, which computes key classification metrics on the test set:
+   * **Accuracy**: Overall percentage of correct predictions.
+   * **F1 Score (Macro)**: Average F1 score across all classes, treating each class equally.
+   * **Precision (Macro)**: Average proportion of correct positive predictions across all classes.
+   * **Recall (Macro)**: Average proportion of actual positives correctly identified per class.
+   The evalutaion includes a printed **classification report** and a **confusion matrix plot** are generated to summarize per-class performance and visualize correct vs. incorrect predictions.
+
+## 5. Results
+#### ICA Results: 
+| Raw | Raw -> Bandpass Filter | Raw -> Bandpass Filter -> ASR |
+|-----|-----------------------|-------------------------------|
+| <img src="img/raw_ica.png" width="400"/> | <img src="img/filter_ica.png" width="400"/> | <img src="img/asr_ica.png" width="400"/> |
 
 #### The change in the number of recognized ICs for the following EEG datasets:
 | EEG (32 channels, 1 dataset) | Bandpass filter | ASR | Brain | Muscle | Eye | Heartbeat | Line | Channel noise | Other | 
@@ -138,6 +186,24 @@ To remove structured artifacts (e.g., eye blinks, heartbeats), we apply Independ
 | Filtered                      | ✓              |    |    7  |    0   |  2 |    1  |    0 |       0        |    4  |   
 | ASR                           | ✓              | ✓   |   6   |    1   |  2  |   0   |  0  |        0       |   5  |  
 
-### 
+### PSD
+<img src="img/psd.png" width="600">
+
+### Classification Results
+
+| Model | Accuracy | F1 Macro | Precision | Recall |
+|-------|----------|----------|-----------|--------|
+| MLP | 12.40% | 0.1023 | 0.1115 | 0.1234 |
+| CNN | 18.89% | 0.1772 | 0.1816 | 0.1892 |
+
+<img src="img/MLP_output.png">
+<img src="img/CNN_output.png">
+
+## 6. Discussion and Conclusion
+The preprocessing pipeline combining bandpass filtering, ASR, and ICA effectively reduced artifacts in the EEG data, as evidenced by the increase in brain-related components and decreased power in artifact frequency bands. The CNN model trained directly on cleaned EEG signals outperformed the MLP using FFT-based features, achieving 18.9% accuracy versus 12.4%, indicating that learning spatial-temporal patterns from raw signals is advantageous. Although classification accuracy remains modest due to the challenging nature of the MindBigData dataset and low EEG signal-to-noise ratio, the results demonstrate the feasibility of decoding visualized digits from EEG. Future work could focus on improving model architectures, data augmentation, and advanced artifact removal to enhance performance.
+
 ## Reference
-[^1]: Mindbigdata the mnist of brain digits https://www.mindbigdata.com/opendb/index.html 
+[^1]:Mishra, R., Sharma, K., & Bhavsar, A. (2021). Visual Brain Decoding for Short Duration EEG Signals. 2021 29th European Signal Processing Conference (EUSIPCO), 1226–1230. https://doi.org/10.23919/EUSIPCO54536.2021.9616192
+[^2]:Chen, X., Teng, X., Chen, H., Pan, Y., & Geyer, P. (2024). Toward reliable signals decoding for electroencephalogram: A benchmark study to EEGNeX. Biomedical Signal Processing and Control, 87, 105475. https://doi.org/10.1016/j.bspc.2023.105475
+[^3]:Hilty, C., & Zander, C. (2024, May 6). Mindnist. Medium. https://medium.com/@caelenhilty/mindnist-29f6fdda948d#a530 
+[^4]:Mindbigdata the mnist of brain digits https://www.mindbigdata.com/opendb/index.html
