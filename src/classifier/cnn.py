@@ -1,5 +1,3 @@
-# src/cnn.py
-
 import os
 import numpy as np
 import torch
@@ -10,11 +8,7 @@ from src.classifier.eval import evaluate_model
 
 
 class CNN(nn.Module):
-    """
-    A minimal CNN implementation (temporal + depthwise + separable convs).
-    """
-    def __init__(self, n_ch, n_times, n_classes,
-                 F1=8, D=2, F2=16, kern_len=64, dropout_rate=0.25):
+    def __init__(self, n_ch, n_times, n_classes, F1=8, D=2, F2=16, kern_len=64, dropout_rate=0.25):
         super().__init__()
 
         self.tempConv = nn.Conv2d(1, F1, (1, kern_len), padding=(0, kern_len // 2), bias=False)
@@ -34,6 +28,10 @@ class CNN(nn.Module):
         t_out = n_times // 4 // 8
         self.classify = nn.Linear(F2 * t_out, n_classes)
 
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+                nn.init.kaiming_normal_(m.weight, nonlinearity='relu')
+
     def forward(self, x):
         x = self.tempConv(x)
         x = self.bn1(x)
@@ -52,34 +50,21 @@ class CNN(nn.Module):
         return x
 
 
-def train_CNN_model(model_class, cleaned_eeg_path, labels_path, model_weights_path, batch_size=32):
-    """
-    Train a CNN model on EEG data and evaluate using evaluate_model().
-
-    Parameters
-    ----------
-    model_class : nn.Module
-        CNN model class to instantiate.
-    cleaned_eeg_path : str
-        Path to cleaned EEG data (.npy), shape (n_trials, n_channels, n_times).
-    labels_path : str
-        Path to label file (.npy), shape (n_trials,).
-    model_weights_path : str
-        File path to save trained model weights (.pth).
-    batch_size : int
-        Training and evaluation batch size.
-    """
-    # Load data
+def train_CNN_model(model_class, cleaned_eeg_path, labels_path, model_weights_path, batch_size=32, lr=1e-4):
     X = np.load(cleaned_eeg_path)
     y = np.load(labels_path)
+
     X = torch.from_numpy(X).float().unsqueeze(1)
     y = torch.from_numpy(y).long()
+
+    # Normalize each trial
+    X = X - X.mean(dim=-1, keepdim=True)
+    X = X / (X.std(dim=-1, keepdim=True) + 1e-8)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     n_trials, _, n_ch, n_times = X.shape
     n_classes = int(y.max().item()) + 1
 
-    # Train/test split
     X_train, X_test, y_train, y_test = train_test_split(
         X.numpy(), y.numpy(), test_size=0.2, stratify=y.numpy(), random_state=42
     )
@@ -91,16 +76,14 @@ def train_CNN_model(model_class, cleaned_eeg_path, labels_path, model_weights_pa
     train_loader = DataLoader(TensorDataset(X_train, y_train), batch_size=batch_size, shuffle=True)
     test_loader = DataLoader(TensorDataset(X_test, y_test), batch_size=batch_size)
 
-    # Instantiate model
     model = model_class(n_ch=n_ch, n_times=n_times, n_classes=n_classes).to(device)
-    optimizer = optim.Adam(model.parameters(), lr=1e-3)
-    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=lr)
+    criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
 
     best_val_loss = float("inf")
     patience = 20
     patience_counter = 0
 
-    # Training loop
     for epoch in range(1, 201):
         model.train()
         train_loss = 0.0
@@ -113,7 +96,6 @@ def train_CNN_model(model_class, cleaned_eeg_path, labels_path, model_weights_pa
             train_loss += loss.item()
         train_loss /= len(train_loader)
 
-        # Validation
         model.eval()
         val_loss = 0.0
         with torch.no_grad():
@@ -124,7 +106,6 @@ def train_CNN_model(model_class, cleaned_eeg_path, labels_path, model_weights_pa
 
         print(f"Epoch {epoch:03d}  train_loss={train_loss:.4f}  val_loss={val_loss:.4f}")
 
-        # Save best model
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             patience_counter = 0
@@ -135,7 +116,6 @@ def train_CNN_model(model_class, cleaned_eeg_path, labels_path, model_weights_pa
                 print("Early stopping.")
                 break
 
-    # Final evaluation
     print("\nEvaluating best model on test set:")
     model.load_state_dict(torch.load(model_weights_path))
-    evaluate_model(model, test_loader, device, load_path=None, model_name="CNN")
+    evaluate_model(model, test_loader, device, model_name="CNN")
