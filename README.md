@@ -203,8 +203,9 @@ We implement two neural network architectures for classification:
 The preprocessing pipeline combining bandpass filtering, ASR, and ICA effectively reduced artifacts in the EEG data, as evidenced by the increase in brain-related components and decreased power in artifact frequency bands. The CNN model trained directly on cleaned EEG signals outperformed the MLP using FFT-based features, achieving 18.9% accuracy versus 12.4%, indicating that learning spatial-temporal patterns from raw signals is advantageous. Although classification accuracy remains modest due to the challenging nature of the MindBigData dataset and low EEG signal-to-noise ratio, the results demonstrate the feasibility of decoding visualized digits from EEG. Future work could focus on improving model architectures, data augmentation, and advanced artifact removal to enhance performance.
 
 
-## 7. Demo Video 
-[Watch the demo video](https://raw.githubusercontent.com/PoYaSharonLin/MNISTMindBigData/PoYaSharonLin-demo-video/img/streamlit-demo.mp4)
+## 7. Demo Video
+![Demo GIF](https://raw.githubusercontent.com/PoYaSharonLin/MNISTMindBigData/PoYaSharonLin-demo-video/img/streamlit-demo.gif)
+![Demo VIdeo](https://raw.githubusercontent.com/PoYaSharonLin/MNISTMindBigData/PoYaSharonLin-demo-video/img/streamlit-demo.mp4)
 The app is available at: https://poyasharonlin-bci-deploy-app-g4dqdz.streamlit.app/
 
 
