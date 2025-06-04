@@ -206,7 +206,7 @@ The preprocessing pipeline combining bandpass filtering, ASR, and ICA effectivel
 ## 7. Demo Video
 ![Demo GIF](https://raw.githubusercontent.com/PoYaSharonLin/MNISTMindBigData/PoYaSharonLin-demo-video/img/streamlit-demo.gif)
 
-Demo mp4 version is available at: https://raw.githubusercontent.com/PoYaSharonLin/MNISTMindBigData/PoYaSharonLin-demo-video/img/streamlit-demo.mp4
+Demo mp4 version is available at: https://github.com/PoYaSharonLin/MNISTMindBigData/blob/PoYaSharonLin-demo-video/img/streamlit-demo.mp4
 
 The app is available at: https://poyasharonlin-bci-deploy-app-g4dqdz.streamlit.app/
 
