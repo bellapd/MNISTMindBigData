@@ -235,6 +235,14 @@ Contrary to expectations, the observed hotspot does not localize to T7 or T8, su
 The preprocessing pipeline combining bandpass filtering, ASR, and ICA effectively reduced artifacts in the EEG data, as evidenced by the increase in brain-related components and decreased power in artifact frequency bands. The CNN model trained directly on cleaned EEG signals outperformed the MLP using FFT-based features, achieving 18.9% accuracy versus 12.4%, indicating that learning spatial-temporal patterns from raw signals is advantageous. Although classification accuracy remains modest due to the challenging nature of the MindBigData dataset and low EEG signal-to-noise ratio, the results demonstrate the feasibility of decoding visualized digits from EEG. Future work could focus on improving model architectures, data augmentation, and advanced artifact removal to enhance performance.
 
 
+## 7. Demo Video
+![Summary GIF](https://github.com/PoYaSharonLin/MNISTMindBigData/blob/main/img/summary.gif)
+
+Summary mp4 version is available at: https://github.com/PoYaSharonLin/MNISTMindBigData/blob/main/img/summary.mp4
+
+The app is available at: 
+
+
 ## Reference
 [^1]:Mishra, R., Sharma, K., & Bhavsar, A. (2021). Visual Brain Decoding for Short Duration EEG Signals. 2021 29th European Signal Processing Conference (EUSIPCO), 1226–1230. https://doi.org/10.23919/EUSIPCO54536.2021.9616192
 [^2]:Chen, X., Teng, X., Chen, H., Pan, Y., & Geyer, P. (2024). Toward reliable signals decoding for electroencephalogram: A benchmark study to EEGNeX. Biomedical Signal Processing and Control, 87, 105475. https://doi.org/10.1016/j.bspc.2023.105475
