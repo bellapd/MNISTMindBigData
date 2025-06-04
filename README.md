@@ -236,7 +236,7 @@ The preprocessing pipeline combining bandpass filtering, ASR, and ICA effectivel
 
 
 ## 7. Demo Video
-![summary Video](https://www.youtube.com/watch?v=bIgXEzHWxP4&feature=youtu.be)
+[![Demo Video](https://img.youtube.com/vi/bIgXEzHWxP4/0.jpg)](https://www.youtube.com/watch?v=bIgXEzHWxP4)
 
 Summary mp4 version is available at: https://github.com/PoYaSharonLin/MNISTMindBigData/blob/main/img/summary.mp4
 
