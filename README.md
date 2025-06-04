@@ -203,10 +203,12 @@ FFT plot reveals that seeing digit 3 triggers stronger and more focused brain ac
 
 #### Alpha power 
 The occipital region (back of the head) appears to have the most intense alpha power, which is consistent with alpha waves being prominent during visual tasks.
+
 ![alpha-scalp](https://github.com/poyasharonlin/EEGClassification/blob/updated-CNN/images/Alpha_scalp.PNG) 
 
 #### Beta power
 High beta power in the frontal and central regions (F3 & F4) suggests active cognitive engagement, possibly reflecting the mental effort involved in processing the digits (3 or 6) seen by the patients. Additionally, the more uniform distribution of beta power across the scalp indicates that multiple brain regions are involved in the task, unlike the alpha power map, which was more localized to the occipital region.
+
 ![beta-scalp](https://github.com/PoYaSharonLin/EEGClassification/blob/updated-CNN/images/Beta_scalp.PNG)
 
 
