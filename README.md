@@ -174,6 +174,7 @@ We implement two neural network architectures for classification:
    The evalutaion includes a printed **classification report** and a **confusion matrix plot** are generated to summarize per-class performance and visualize correct vs. incorrect predictions.
 
 ## 5. Results
+
 #### ICA Results: 
 | Raw | Raw -> Bandpass Filter | Raw -> Bandpass Filter -> ASR |
 |-----|-----------------------|-------------------------------|
@@ -189,6 +190,32 @@ We implement two neural network architectures for classification:
 ### PSD
 <img src="img/psd.png" width="600">
 
+### EEG & FFT Results 
+#### EEG 
+Analysis of EEG recordings indicates that that neural activity patterns associated with the mental imagery of different digits are not uniform. Specifically, during the imagination of the digit “3,” the signals recorded at channel pairs O1–O2, FC5–FC6, and T7–T8 exhibit highly similar oscillatory patterns. In contrast, when the digit “6” is imagined, these same channel pairs do not display synchronized activity.
+![EEG](https://github.com/poyasharonlin/EEGClassification/blob/updated-CNN/images/EEG.PNG)
+
+#### FFT 
+FFT plot reveals that seeing digit 3 triggers stronger and more focused brain activity in the alpha/theta range compared to digit 6, which shows a more distributed and less intense response. For example, in channel O1, digit 3 has a peak around 20, while digit 6 peaks around 10. This suggests that digit 3 may elicit a stronger neural response in these frequency bands. 
+![FFT](https://github.com/PoYaSharonLin/EEGClassification/blob/updated-CNN/images/FFT.PNG)
+
+### Scalp Plot 
+
+#### Alpha power 
+The occipital region (back of the head) appears to have the most intense alpha power, which is consistent with alpha waves being prominent during visual tasks.
+![alpha-scalp](https://github.com/poyasharonlin/EEGClassification/blob/updated-CNN/images/Alpha_scalp.PNG) 
+
+#### Beta power
+High beta power in the frontal and central regions (F3 & F4) suggests active cognitive engagement, possibly reflecting the mental effort involved in processing the digits (3 or 6) seen by the patients. Additionally, the more uniform distribution of beta power across the scalp indicates that multiple brain regions are involved in the task, unlike the alpha power map, which was more localized to the occipital region.
+![beta-scalp](https://github.com/PoYaSharonLin/EEGClassification/blob/updated-CNN/images/Beta_scalp.PNG)
+
+
+#### Theta power 
+Contrary to expectations, the observed hotspot does not localize to T7 or T8, suggesting that it does not predominantly reflect temporal‐lobe‐mediated memory processes. Rather, this pattern more likely represents increased cognitive effort, working‐memory engagement, or imagery‐related activation within central‐frontal regions. Nonetheless, the temporal lobes (T7/T8) may still contribute to task performance; however, they do not appear to be the principal generators of the theta‐band activity depicted in this plot.
+
+![theta-scalp](https://github.com/PoYaSharonLin/EEGClassification/blob/updated-CNN/images/Theta_scalp.PNG)
+
+
 ### Classification Results
 
 | Model | Accuracy | F1 Macro | Precision | Recall |
@@ -199,8 +226,12 @@ We implement two neural network architectures for classification:
 <img src="img/MLP_output.png">
 <img src="img/CNN_output.png">
 
+
+
+
 ## 6. Discussion and Conclusion
 The preprocessing pipeline combining bandpass filtering, ASR, and ICA effectively reduced artifacts in the EEG data, as evidenced by the increase in brain-related components and decreased power in artifact frequency bands. The CNN model trained directly on cleaned EEG signals outperformed the MLP using FFT-based features, achieving 18.9% accuracy versus 12.4%, indicating that learning spatial-temporal patterns from raw signals is advantageous. Although classification accuracy remains modest due to the challenging nature of the MindBigData dataset and low EEG signal-to-noise ratio, the results demonstrate the feasibility of decoding visualized digits from EEG. Future work could focus on improving model architectures, data augmentation, and advanced artifact removal to enhance performance.
+
 
 ## Reference
 [^1]:Mishra, R., Sharma, K., & Bhavsar, A. (2021). Visual Brain Decoding for Short Duration EEG Signals. 2021 29th European Signal Processing Conference (EUSIPCO), 1226–1230. https://doi.org/10.23919/EUSIPCO54536.2021.9616192
