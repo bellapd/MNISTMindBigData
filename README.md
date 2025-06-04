@@ -202,6 +202,14 @@ We implement two neural network architectures for classification:
 ## 6. Discussion and Conclusion
 The preprocessing pipeline combining bandpass filtering, ASR, and ICA effectively reduced artifacts in the EEG data, as evidenced by the increase in brain-related components and decreased power in artifact frequency bands. The CNN model trained directly on cleaned EEG signals outperformed the MLP using FFT-based features, achieving 18.9% accuracy versus 12.4%, indicating that learning spatial-temporal patterns from raw signals is advantageous. Although classification accuracy remains modest due to the challenging nature of the MindBigData dataset and low EEG signal-to-noise ratio, the results demonstrate the feasibility of decoding visualized digits from EEG. Future work could focus on improving model architectures, data augmentation, and advanced artifact removal to enhance performance.
 
+
+## 7. Demo Video
+![Demo GIF](https://raw.githubusercontent.com/PoYaSharonLin/MNISTMindBigData/PoYaSharonLin-demo-video/img/streamlit-demo.gif)
+
+Demo mp4 version is available at: https://github.com/PoYaSharonLin/MNISTMindBigData/blob/PoYaSharonLin-demo-video/img/streamlit-demo.mp4
+
+The app is available at: https://poyasharonlin-bci-deploy-app-g4dqdz.streamlit.app/
+
 ## Reference
 [^1]:Mishra, R., Sharma, K., & Bhavsar, A. (2021). Visual Brain Decoding for Short Duration EEG Signals. 2021 29th European Signal Processing Conference (EUSIPCO), 1226–1230. https://doi.org/10.23919/EUSIPCO54536.2021.9616192
 [^2]:Chen, X., Teng, X., Chen, H., Pan, Y., & Geyer, P. (2024). Toward reliable signals decoding for electroencephalogram: A benchmark study to EEGNeX. Biomedical Signal Processing and Control, 87, 105475. https://doi.org/10.1016/j.bspc.2023.105475
