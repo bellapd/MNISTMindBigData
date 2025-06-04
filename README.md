@@ -236,11 +236,11 @@ The preprocessing pipeline combining bandpass filtering, ASR, and ICA effectivel
 
 
 ## 7. Demo Video
-![Summary GIF](https://github.com/PoYaSharonLin/MNISTMindBigData/blob/main/img/summary.gif)
+![summary Video](https://www.youtube.com/watch?v=bIgXEzHWxP4&feature=youtu.be)
 
 Summary mp4 version is available at: https://github.com/PoYaSharonLin/MNISTMindBigData/blob/main/img/summary.mp4
 
-The app is available at: 
+The app is available at: https://bci-deploy.streamlit.app/
 
 
 ## Reference
