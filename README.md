@@ -205,9 +205,10 @@ The preprocessing pipeline combining bandpass filtering, ASR, and ICA effectivel
 
 ## 7. Demo Video
 ![Demo GIF](https://raw.githubusercontent.com/PoYaSharonLin/MNISTMindBigData/PoYaSharonLin-demo-video/img/streamlit-demo.gif)
-![Demo VIdeo](https://raw.githubusercontent.com/PoYaSharonLin/MNISTMindBigData/PoYaSharonLin-demo-video/img/streamlit-demo.mp4)
-The app is available at: https://poyasharonlin-bci-deploy-app-g4dqdz.streamlit.app/
 
+Demo mp4 version is available at: https://raw.githubusercontent.com/PoYaSharonLin/MNISTMindBigData/PoYaSharonLin-demo-video/img/streamlit-demo.mp4
+
+The app is available at: https://poyasharonlin-bci-deploy-app-g4dqdz.streamlit.app/
 
 ## Reference
 [^1]:Mishra, R., Sharma, K., & Bhavsar, A. (2021). Visual Brain Decoding for Short Duration EEG Signals. 2021 29th European Signal Processing Conference (EUSIPCO), 1226–1230. https://doi.org/10.23919/EUSIPCO54536.2021.9616192
